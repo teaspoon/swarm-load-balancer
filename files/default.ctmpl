@@ -1,4 +1,7 @@
 {{$app := env "APP_NAME"}}
+{{$app_host := env "APP_HOST"}}
+{{$api := env "API_NAME"}}
+{{$api_host := env "API_HOST"}}
 
 upstream {{printf $app}} {
     least_conn;
@@ -6,10 +9,28 @@ upstream {{printf $app}} {
     server {{.Address}}:{{.Port}} max_fails=3 fail_timeout=60 weight=1;{{end}}
 }
 
+upstream {{printf $api}} {
+    least_conn;
+    {{range service $api}}
+    server {{.Address}}:{{.Port}} max_fails=3 fail_timeout=60 weight=1;{{end}}
+}
+
 server {
     listen 80 default;
 
+    server_name {{$app_host}};
+
     location / {
         proxy_pass http://{{printf $app}};
+    }
+}
+
+server {
+    listen 80 default;
+
+    server_name {{$api_host}};
+
+    location / {
+        proxy_pass http://{{printf $api}};
     }
 }
