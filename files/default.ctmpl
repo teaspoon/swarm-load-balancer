@@ -1,36 +1,87 @@
-{{$app := env "APP_NAME"}}
 {{$app_host := env "APP_HOST"}}
-{{$api := env "API_NAME"}}
 {{$api_host := env "API_HOST"}}
+{{$blue_app  := env "BLUE_APP"}}
+{{$green_app := env "GREEN_APP"}}
+{{$blue_api  := env "BLUE_API"}}
+{{$green_api := env "GREEN_API"}}
+{{$live  := file "/var/live"}}
 
-upstream {{printf $app}} {
-    least_conn;
-    {{range service $app}}
-    server {{.Address}}:{{.Port}} max_fails=3 fail_timeout=60 weight=1;{{end}}
+upstream {{printf $blue_app}} {
+  least_conn;
+  {{range service $blue_app}}
+  server {{.Address}}:{{.Port}} max_fails=3 fail_timeout=60 weight=1;{{end}}
 }
 
-upstream {{printf $api}} {
-    least_conn;
-    {{range service $api}}
-    server {{.Address}}:{{.Port}} max_fails=3 fail_timeout=60 weight=1;{{end}}
+upstream {{printf $green_app}} {
+  least_conn;
+  {{range service $green_app}}
+  server {{.Address}}:{{.Port}} max_fails=3 fail_timeout=60 weight=1;{{end}}
+}
+
+upstream {{printf $blue_api}} {
+  least_conn;
+  {{range service $blue_api}}
+  server {{.Address}}:{{.Port}} max_fails=3 fail_timeout=60 weight=1;{{end}}
+}
+
+upstream {{printf $green_api}} {
+  least_conn;
+  {{range service $green_api}}
+  server {{.Address}}:{{.Port}} max_fails=3 fail_timeout=60 weight=1;{{end}}
 }
 
 server {
-    listen 80;
+  listen 80;
 
-    server_name {{$app_host}};
+  server_name {{$app_host}};
 
-    location / {
-        proxy_pass http://{{printf $app}};
-    }
+  location / {
+    {{if eq $live "blue"}}
+    proxy_pass http://{{printf $blue_app}};
+    {{else}}
+    proxy_pass http://{{printf $green_app}};
+    {{end}}
+  }
 }
 
 server {
-    listen 80;
+  listen 8888;
 
-    server_name {{$api_host}};
+  server_name {{$app_host}};
 
-    location / {
-        proxy_pass http://{{printf $api}};
-    }
+  location / {
+    {{if eq $live "blue"}}
+    proxy_pass http://{{printf $green_app}};
+    {{else}}
+    proxy_pass http://{{printf $blue_app}};
+    {{end}}
+  }
+}
+
+server {
+  listen 80;
+
+  server_name {{$api_host}};
+
+  location / {
+    {{if eq $live "blue"}}
+    proxy_pass http://{{printf $blue_api}};
+    {{else}}
+    proxy_pass http://{{printf $green_api}};
+    {{end}}
+  }
+}
+
+server {
+  listen 8888;
+
+  server_name {{$api_host}};
+
+  location / {
+    {{if eq $live "blue"}}
+    proxy_pass http://{{printf $green_api}};
+    {{else}}
+    proxy_pass http://{{printf $blue_api}};
+    {{end}}
+  }
 }
