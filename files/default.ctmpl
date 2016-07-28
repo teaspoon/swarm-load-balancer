@@ -6,82 +6,91 @@
 {{$green_api := env "GREEN_API"}}
 {{$live  := file "/var/live"}}
 
-upstream {{printf $blue_app}} {
-  least_conn;
-  {{range service $blue_app}}
-  server {{.Address}}:{{.Port}} max_fails=3 fail_timeout=60 weight=1;{{end}}
+worker_processes auto;
+
+events {
+  worker_connections  1024;
 }
 
-upstream {{printf $green_app}} {
-  least_conn;
-  {{range service $green_app}}
-  server {{.Address}}:{{.Port}} max_fails=3 fail_timeout=60 weight=1;{{end}}
-}
+http {
 
-upstream {{printf $blue_api}} {
-  least_conn;
-  {{range service $blue_api}}
-  server {{.Address}}:{{.Port}} max_fails=3 fail_timeout=60 weight=1;{{end}}
-}
-
-upstream {{printf $green_api}} {
-  least_conn;
-  {{range service $green_api}}
-  server {{.Address}}:{{.Port}} max_fails=3 fail_timeout=60 weight=1;{{end}}
-}
-
-server {
-  listen 80;
-
-  server_name {{$app_host}};
-
-  location / {
-    {{if eq $live "blue"}}
-    proxy_pass http://{{printf $blue_app}};
-    {{else}}
-    proxy_pass http://{{printf $green_app}};
-    {{end}}
+  upstream {{printf $blue_app}} {
+    least_conn;
+    {{range service $blue_app}}
+    server {{.Address}}:{{.Port}} max_fails=3 fail_timeout=60 weight=1;{{end}}
   }
-}
 
-server {
-  listen 8888;
-
-  server_name {{$app_host}};
-
-  location / {
-    {{if eq $live "blue"}}
-    proxy_pass http://{{printf $green_app}};
-    {{else}}
-    proxy_pass http://{{printf $blue_app}};
-    {{end}}
+  upstream {{printf $green_app}} {
+    least_conn;
+    {{range service $green_app}}
+    server {{.Address}}:{{.Port}} max_fails=3 fail_timeout=60 weight=1;{{end}}
   }
-}
 
-server {
-  listen 80;
-
-  server_name {{$api_host}};
-
-  location / {
-    {{if eq $live "blue"}}
-    proxy_pass http://{{printf $blue_api}};
-    {{else}}
-    proxy_pass http://{{printf $green_api}};
-    {{end}}
+  upstream {{printf $blue_api}} {
+    least_conn;
+    {{range service $blue_api}}
+    server {{.Address}}:{{.Port}} max_fails=3 fail_timeout=60 weight=1;{{end}}
   }
-}
 
-server {
-  listen 8888;
+  upstream {{printf $green_api}} {
+    least_conn;
+    {{range service $green_api}}
+    server {{.Address}}:{{.Port}} max_fails=3 fail_timeout=60 weight=1;{{end}}
+  }
 
-  server_name {{$api_host}};
+  server {
+    listen 80;
 
-  location / {
-    {{if eq $live "blue"}}
-    proxy_pass http://{{printf $green_api}};
-    {{else}}
-    proxy_pass http://{{printf $blue_api}};
-    {{end}}
+    server_name {{$app_host}};
+
+    location / {
+      {{if eq $live "blue"}}
+      proxy_pass http://{{printf $blue_app}};
+      {{else}}
+      proxy_pass http://{{printf $green_app}};
+      {{end}}
+    }
+  }
+
+  server {
+    listen 8888;
+
+    server_name {{$app_host}};
+
+    location / {
+      {{if eq $live "blue"}}
+      proxy_pass http://{{printf $green_app}};
+      {{else}}
+      proxy_pass http://{{printf $blue_app}};
+      {{end}}
+    }
+  }
+
+  server {
+    listen 80;
+
+    server_name {{$api_host}};
+
+    location / {
+      {{if eq $live "blue"}}
+      proxy_pass http://{{printf $blue_api}};
+      {{else}}
+      proxy_pass http://{{printf $green_api}};
+      {{end}}
+    }
+  }
+
+  server {
+    listen 8888;
+
+    server_name {{$api_host}};
+
+    location / {
+      {{if eq $live "blue"}}
+      proxy_pass http://{{printf $green_api}};
+      {{else}}
+      proxy_pass http://{{printf $blue_api}};
+      {{end}}
+    }
   }
 }
