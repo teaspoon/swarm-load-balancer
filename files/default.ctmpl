@@ -14,6 +14,11 @@ events {
 
 http {
 
+  server {
+    listen 80;
+    return 301 https://$host$request_uri;
+  }
+
   gzip_http_version 1.1;
   gzip on;
   gzip_proxied any;
@@ -51,9 +56,17 @@ http {
   }
 
   server {
-    listen 80;
+    listen 443;
 
     server_name {{$app_host}};
+
+    ssl_certificate /etc/letsencrypt/live/app/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/app/privkey.pem;
+
+    location /.well-known/acme-challenge {
+      allow all;
+      alias /app/.well-known/acme-challenge;
+    }
 
     location / {
       {{if eq $live "blue"}}
@@ -111,9 +124,17 @@ http {
   }
 
   server {
-    listen 80;
+    listen 443;
 
     server_name {{$api_host}};
+
+    ssl_certificate /etc/letsencrypt/live/api/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/api/privkey.pem;
+
+    location /.well-known/acme-challenge {
+      allow all;
+      alias /api/.well-known/acme-challenge;
+    }
 
     location / {
       {{if eq $live "blue"}}
