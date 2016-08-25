@@ -23,6 +23,8 @@ ADD files/default.ctmpl /templates/default.ctmpl
 ADD https://releases.hashicorp.com/consul-template/0.12.2/consul-template_0.12.2_linux_amd64.zip /usr/bin/
 RUN unzip /usr/bin/consul-template_0.12.2_linux_amd64.zip -d /usr/local/bin
 
+RUN mkdir /app
+RUN mkdir /api
 ENV LIVE green
 ENV BLUE_APP ekaya_vip_blue
 ENV GREEN_APP ekaya_vip_green
