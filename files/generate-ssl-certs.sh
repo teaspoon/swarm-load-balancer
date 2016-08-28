@@ -12,4 +12,4 @@ consul-template -consul=$CONSUL_URL -template="/templates/unsecured.ctmpl:/etc/n
     -d $API_HOSTNAME \
     --non-interactive --agree-tos --email $WEBMASTER
 
-consul-template -consul=$CONSUL_URL -template="/templates/default.ctmpl:/etc/nginx/conf.d/default.conf:service nginx reload"
+consul-template -consul=$CONSUL_URL -template="/templates/default.ctmpl:/etc/nginx/nginx.conf:nginx -s reload"
