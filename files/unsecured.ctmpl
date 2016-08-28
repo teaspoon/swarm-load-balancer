@@ -57,12 +57,9 @@ http {
   }
 
   server {
-    listen 443;
+    listen 80;
 
     server_name {{$app_host}};
-
-    ssl_certificate /etc/letsencrypt/live/app/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/app/privkey.pem;
 
     location /.well-known/acme-challenge {
       allow all;
@@ -125,12 +122,9 @@ http {
   }
 
   server {
-    listen 443;
+    listen 80;
 
     server_name {{$api_host}};
-
-    ssl_certificate /etc/letsencrypt/live/api/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/api/privkey.pem;
 
     location /.well-known/acme-challenge {
       allow all;

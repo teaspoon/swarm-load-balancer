@@ -19,6 +19,7 @@ RUN cd /opt \
   && git clone https://github.com/certbot/certbot
 
 ADD files/default.ctmpl /templates/default.ctmpl
+ADD files/unsecured.ctmpl /templates/unsecured.ctmpl
 
 ADD https://releases.hashicorp.com/consul-template/0.12.2/consul-template_0.12.2_linux_amd64.zip /usr/bin/
 RUN unzip /usr/bin/consul-template_0.12.2_linux_amd64.zip -d /usr/local/bin
