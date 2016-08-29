@@ -1,5 +1,7 @@
 {{$app_host := env "APP_HOST"}}
 {{$api_host := env "API_HOST"}}
+{{$app_hostname := env "APP_HOSTNAME"}}
+{{$api_hostname := env "API_HOSTNAME"}}
 {{$blue_app  := env "BLUE_APP"}}
 {{$green_app := env "GREEN_APP"}}
 {{$blue_api  := env "BLUE_API"}}

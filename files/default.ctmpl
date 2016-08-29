@@ -1,5 +1,7 @@
 {{$app_host := env "APP_HOST"}}
 {{$api_host := env "API_HOST"}}
+{{$app_hostname := env "APP_HOSTNAME"}}
+{{$api_hostname := env "API_HOSTNAME"}}
 {{$blue_app  := env "BLUE_APP"}}
 {{$green_app := env "GREEN_APP"}}
 {{$blue_api  := env "BLUE_API"}}
@@ -61,8 +63,8 @@ http {
 
     server_name {{$app_host}};
 
-    ssl_certificate /etc/letsencrypt/live/app/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/app/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/{{$app_hostname}}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{$app_hostname}}/privkey.pem;
 
     location /.well-known/acme-challenge {
       allow all;
@@ -129,8 +131,8 @@ http {
 
     server_name {{$api_host}};
 
-    ssl_certificate /etc/letsencrypt/live/api/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/api/privkey.pem;
+    ssl_certificate /etc/letsencrypt/live/{{$api_hostname}}/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/{{$api_hostname}}/privkey.pem;
 
     location /.well-known/acme-challenge {
       allow all;
