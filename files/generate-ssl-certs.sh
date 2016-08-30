@@ -2,7 +2,7 @@
 
 cd /opt/certbot
 
-consul-template -consul=$CONSUL_URL -template="/templates/unsecured.ctmpl:/etc/nginx/nginx.conf:nginx -s reload" -retry 30s -once
+consul-template -consul=$CONSUL_URL -template="/templates/unsecured.ctmpl:/etc/nginx/nginx.conf:service nginx start" -retry 30s -once
 
 ./certbot-auto certonly --webroot -w /app \
     -d $APP_HOSTNAME \

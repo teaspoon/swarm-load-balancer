@@ -59,7 +59,7 @@ http {
   }
 
   server {
-    listen 443;
+    listen 443 ssl;
 
     server_name {{$app_host}};
 
@@ -127,7 +127,7 @@ http {
   }
 
   server {
-    listen 443;
+    listen 443 ssl;
 
     server_name {{$api_host}};
 
