@@ -2,4 +2,4 @@
 nginx -g 'daemon off;' &
 echo -n $LIVE > /var/live
 
-/bin/generate-ssl-certs.sh
+consul-template -consul=$CONSUL_URL -template="/templates/default.ctmpl:/etc/nginx/nginx.conf:nginx -s reload"
