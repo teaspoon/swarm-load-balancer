@@ -3,11 +3,11 @@ FROM nginx:latest
 RUN apt-get update \
   && apt-get install -y unzip \
   && apt-get install -y git \
-  && apt-get install -y dnsutils
+  && apt-get install -y dnsutils \
+  && apt-get install -y cron
 
 ADD files/start.sh /bin/start.sh
 ADD files/generate-ssl-certs.sh /bin/generate-ssl-certs.sh
-RUN mkdir /etc/cron.weekly
 ADD files/renew-ssl /etc/cron.weekly/renew-ssl
 
 ADD files/switch /bin/switch
@@ -24,6 +24,8 @@ ADD files/unsecured.ctmpl /templates/unsecured.ctmpl
 
 ADD https://releases.hashicorp.com/consul-template/0.12.2/consul-template_0.12.2_linux_amd64.zip /usr/bin/
 RUN unzip /usr/bin/consul-template_0.12.2_linux_amd64.zip -d /usr/local/bin
+
+RUN /etc/init.d/cron start
 
 RUN mkdir /app
 RUN mkdir /api
