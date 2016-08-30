@@ -7,13 +7,14 @@ RUN apt-get update \
 
 ADD files/start.sh /bin/start.sh
 ADD files/generate-ssl-certs.sh /bin/generate-ssl-certs.sh
-ADD files/renew-ssl.sh /bin/renew-ssl.sh
+RUN mkdir /etc/cron.weekly
+ADD files/renew-ssl /etc/cron.weekly/renew-ssl
 
 ADD files/switch /bin/switch
 RUN chmod +x /bin/start.sh
 RUN chmod +x /bin/switch
 RUN chmod +x /bin/generate-ssl-certs.sh
-RUN chmod +x /bin/renew-ssl.sh
+RUN chmod +x /etc/cron.weekly/renew-ssl
 
 RUN cd /opt \
   && git clone https://github.com/certbot/certbot
