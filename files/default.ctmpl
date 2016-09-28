@@ -34,32 +34,40 @@ http {
       application/x-javascript
       application/json;
 
+  {{if service $blue_app}}
   upstream {{printf $blue_app}} {
     least_conn;
     {{range service $blue_app}}
     server {{.Address}}:{{.Port}} max_fails=3 fail_timeout=60 weight=1;{{end}}
   }
+  {{end}}
 
+  {{if service $green_app}}
   upstream {{printf $green_app}} {
     least_conn;
     {{range service $green_app}}
     server {{.Address}}:{{.Port}} max_fails=3 fail_timeout=60 weight=1;{{end}}
   }
+  {{end}}
 
+  {{if service $blue_api}}
   upstream {{printf $blue_api}} {
     least_conn;
     {{range service $blue_api}}
     server {{.Address}}:{{.Port}} max_fails=3 fail_timeout=60 weight=1;{{end}}
   }
+  {{end}}
 
+  {{if service $green_api}}
   upstream {{printf $green_api}} {
     least_conn;
     {{range service $green_api}}
     server {{.Address}}:{{.Port}} max_fails=3 fail_timeout=60 weight=1;{{end}}
   }
+  {{end}}
 
   server {
-    listen 443;
+    listen 443 ssl;
 
     server_name {{$app_host}};
 
@@ -73,9 +81,9 @@ http {
 
     location / {
       {{if eq $live "blue"}}
-      proxy_pass http://{{printf $blue_app}};
+      {{if service $blue_app}} proxy_pass http://{{printf $blue_app}}; {{end}}
       {{else}}
-      proxy_pass http://{{printf $green_app}};
+      {{if service $green_app}} proxy_pass http://{{printf $green_app}}; {{end}}
       {{end}}
     }
 
@@ -103,9 +111,9 @@ http {
 
     location / {
       {{if eq $live "blue"}}
-      proxy_pass http://{{printf $green_app}};
+      {{if service $green_app}} proxy_pass http://{{printf $green_app}}; {{end}}
       {{else}}
-      proxy_pass http://{{printf $blue_app}};
+      {{if service $blue_app}} proxy_pass http://{{printf $blue_app}}; {{end}}
       {{end}}
     }
 
@@ -127,7 +135,7 @@ http {
   }
 
   server {
-    listen 443;
+    listen 443 ssl;
 
     server_name {{$api_host}};
 
@@ -141,9 +149,9 @@ http {
 
     location / {
       {{if eq $live "blue"}}
-      proxy_pass http://{{printf $blue_api}};
+      {{if service $blue_api}} proxy_pass http://{{printf $blue_api}}; {{end}}
       {{else}}
-      proxy_pass http://{{printf $green_api}};
+      {{if service $green_api}} proxy_pass http://{{printf $green_api}}; {{end}}
       {{end}}
     }
 
@@ -171,9 +179,9 @@ http {
 
     location / {
       {{if eq $live "blue"}}
-      proxy_pass http://{{printf $green_api}};
+      {{if service $green_api}} proxy_pass http://{{printf $green_api}}; {{end}}
       {{else}}
-      proxy_pass http://{{printf $blue_api}};
+      {{if service $blue_api}} proxy_pass http://{{printf $blue_api}}; {{end}}
       {{end}}
     }
 
