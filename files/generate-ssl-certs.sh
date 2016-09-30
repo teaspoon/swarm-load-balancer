@@ -6,6 +6,7 @@ consul-template -consul=$CONSUL_URL -template="/templates/unsecured.ctmpl:/etc/n
 
 ./certbot-auto certonly --webroot -w /app \
     -d $APP_HOSTNAME \
+    -d www.$APP_HOSTNAME \
     --non-interactive --agree-tos --email $WEBMASTER
 
 ./certbot-auto certonly --webroot -w /api \
