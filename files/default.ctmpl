@@ -79,6 +79,11 @@ http {
       alias /app/.well-known/acme-challenge;
     }
 
+    location ~* /(images|cache|media|logs|tmp)/.*.(php|pl|py|jsp|asp|sh|cgi)$ {
+      return 403;
+      error_page 403 /403_error.html;
+    }
+
     location / {
       {{if eq $live "blue"}}
       {{if service $blue_app}} proxy_pass http://{{printf $blue_app}}; {{end}}
