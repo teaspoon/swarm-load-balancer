@@ -4,7 +4,8 @@ RUN apt-get update \
   && apt-get install -y unzip \
   && apt-get install -y git \
   && apt-get install -y dnsutils \
-  && apt-get install -y cron
+  && apt-get install -y cron \
+  && apt-get install curl -y
 
 ADD files/start.sh /bin/start.sh
 ADD files/generate-ssl-certs.sh /bin/generate-ssl-certs.sh
